@@ -13,7 +13,15 @@ class Kategori extends CI_Controller
     // Read: Menampilkan halaman utama
     public function index() {
         $data['kategori'] = $this->Kategori_model->get_all();
-        $this->load->view('kategori/index', $data);
+        
+        // Pengecekan: Apakah array kategori kosong?
+        if(empty($data['kategori'])) {
+            // jika kosong, muat tampilan empty state
+            $this->load->view('kategori/empty_kategori');
+        } else {
+            // jika ada data, muat tampilan tabel (list)
+            $this->load->view('kategori/list_kategori', $data);
+        }
     }
 
     // Create: Proses menyimpan data baru

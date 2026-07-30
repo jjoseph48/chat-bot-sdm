@@ -12,7 +12,12 @@ class Tag extends CI_Controller
     // Read: Menampilkan halaman utama
     public function index() {
         $data['tag'] = $this->Tag_model->get_all();
-        $this->load->view('tag/index', $data);
+        
+        if(empty($data['tag'])) {
+            $this->load->view('tag/empty_tag');
+        } else {
+            $this->load->view('tag/list_tag', $data);
+        }
     }
 
     // Create: Proses menyimpan data baru

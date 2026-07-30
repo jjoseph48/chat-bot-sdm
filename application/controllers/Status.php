@@ -11,7 +11,16 @@ class Status extends CI_Controller
     // Read: Menampilkan halaman utama
     public function index() {
         $data['status'] = $this->Status_model->get_all();
-        $this->load->view('status/index', $data);
+
+        // Pengecekan: Apakah array kategori kosong?
+        if (empty($data['status'])) {
+            // jika kosong, muat tampilan empty state
+            $this->load->view('status/empty_status');
+        } else {
+            // jika ada data, muat tampilan tabel (list)
+            $this->load->view('status/list_status', $data);
+        }
+        
     }
 
     // Create: Proses menyimpan data baru
