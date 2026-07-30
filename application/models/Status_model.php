@@ -26,15 +26,15 @@ class Status_model extends CI_Model
     }
 
     // Delete: menghapus data status
-    public function delete($id) {
-        // Trapping: cegah penghapusan jika ID kosong
-        if(empty($id)) {
-            return false;
-        }
+    // public function delete($id) {
+    //     // Trapping: cegah penghapusan jika ID kosong
+    //     if(empty($id)) {
+    //         return false;
+    //     }
 
-        $this->db->where('id_faq_status', $id);
-        return $this->db->delete($this->table);
-    }
+    //     $this->db->where('id_faq_status', $id);
+    //     return $this->db->delete($this->table);
+    // }
 
 
 }

@@ -8,7 +8,14 @@ class Tag_model extends CI_Model
 
     // Read: mengambil semua data tag faq
     public function get_all(){
-        return $this->db->get($this-table)->result_array();
+        $this->db->select('faq_tag.*, faq_status.judul_status');
+        $this->db->from($this->table);
+        // Menggabungkan tabel tag dengan tabel status
+        $this->db->join('faq_status', 'faq_status.id_faq_status = faq_tag.status_taq_fk', 'left');
+        // Filter: sembunyikan data yang memiliki status 2
+        $this->db->where('faq_tag.status_tag_fk !=', 2);
+
+        return $this->db->get()->result_array();
     }
 
     // Read: mengambil 1 data tag berdasarkan ID (untuk edit)

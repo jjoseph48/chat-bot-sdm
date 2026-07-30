@@ -8,7 +8,14 @@ class Kategori_model extends CI_Model
 
     // Read: mengambil semua data kategor
     public function get_all() {
-        return $this->db->get($this->table)->result_array();
+        $this->db->select('faq_kategori.*, faq_status.judul_status');
+        $this->db->from($this->table);
+        // Menggabungkan tabel kategori dengan tabel status
+        $this->db->join('faq_status', 'faq_status.id_faq_status = faq_kategori.status_kategori_fk', 'left');
+        // Filter: Sembunyikan data yang memiliki status 2 (Dihapus/Nonaktif)
+        $this->db->where('faq_kategori.status_kategori_fk !=', 2);
+        
+        return $this->db-get()->result_array();
     }
 
     // Read: mengambil 1 data kategori berdasarkan ID (untuk edit)
