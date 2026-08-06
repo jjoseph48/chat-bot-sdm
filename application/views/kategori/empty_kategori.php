@@ -23,7 +23,7 @@
     <!-- MODAL TAMBAH KATEGORI (Efek 'fade' dihilangkan sementara untuk mencegah bentrok animasi) -->
     <div class="modal" id="tambahModal" tabindex="-1">
         <div class="modal-dialog">
-            <!-- KUNCI PERUBAHAN 2: Tag <form> sekarang membungkus seluruh modal-content -->
+            <!-- KUNCI PERUBAHAN 2: Tag <form> sekarang membungkus seluruh modal-content , site_url untuk memanggil controller -->
             <form action="<?= site_url('kategori/simpan') ?>" method="post" class="modal-content text-start">
                 <div class="modal-header">
                     <h5 class="modal-title">Tambah Kategori Baru</h5>

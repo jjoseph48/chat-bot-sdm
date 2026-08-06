@@ -22,7 +22,7 @@
     <!-- Modal Tambah Status -->
     <div class="modal fade" id="tambahModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog">
-            <div class="modal-content text-start">
+            <!-- <div class="modal-content text-start">
                 <div class="modal-header">
                     <h5 class="modal-title">Tambah Status Baru</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
@@ -35,9 +35,40 @@
                         </div>
                     </div>
                 </form>
-            </div>
+            </div> -->
+            <form action="<?= site_url('status/simpan') ?>" method="post" class="modal-content text-start">
+                <div class="modal-header">
+                    <h5 class="modal-title">Tambah Status Baru</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">Judul Status <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" name="judul_status" required>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                    <button type="submit" class="btn btn-primary">Simpan Data</button>
+                </div>
+            </form>
+        </div>
     </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    // Inisialisasi modal secara paksa
+    const modalElemen = document.getElementById('tambahModal');
+    const myModal = new bootstrap.Modal(modalElemen);
+
+    function bukaModal() {
+        myModal.show();
+    }
+
+    function tutupModal() {
+        myModal.hide();
+    }
+</script>
+
 </body>
 </html>
