@@ -15,7 +15,7 @@ class Kategori_model extends CI_Model
         // Filter: Sembunyikan data yang memiliki status 2 (Dihapus/Nonaktif)
         $this->db->where('faq_kategori.status_kategori_fk !=', 2);
         
-        return $this->db-get()->result_array();
+        return $this->db->get()->result_array();
     }
 
     // Read: mengambil 1 data kategori berdasarkan ID (untuk edit)

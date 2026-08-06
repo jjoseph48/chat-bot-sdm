@@ -30,7 +30,10 @@ class Kategori extends CI_Controller
 
         // Trapping lapis Controller: Pastikan input tidak kosong
         if(!empty($judul)) {
-            $data = ['judul_kategori' => $judul];
+            $data = [
+                'judul_kategori' => $judul,
+                'status_kategori_fk' => 1 // 1 adalah status "Aktif" di tabel faq_status
+            ];
             $this->Kategori_model->insert($data);
 
             // Set pesan sukses

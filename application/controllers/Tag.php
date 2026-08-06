@@ -26,7 +26,10 @@ class Tag extends CI_Controller
 
         // Trapping lapis Controller: Pastikan input tidak kosong
         if(!empty($judul)) {
-            $data = ['judul_tag' => $judul];
+            $data = [
+                'judul_tag' => $judul,
+                'status_tag_fk' => 1 // 1 adalah status "Aktif" di tabel faq_status
+            ];
             $this->Tag_model->insert($data);
 
             // Set pesan sukses
