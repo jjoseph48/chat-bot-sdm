@@ -26,4 +26,31 @@
     <div class="card shadow-sm">
         <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
             <h5 class="mb-0">Daftar Tag FAQ</h5>
-            <button type="button
+            <button type="button" class="btn btn-light btn-sm fw-fold" data-bs-toggle="modal" data-bs-taregt="#tambahModal">
+                + Tambah Tag
+            </button>
+        </div>
+        <div class="card-body">
+            <table class="table table-bordered table-hover">
+                <thead class="table-light">
+                    <tr>
+                        <th width="5%" class="text-center">No</th>
+                        <th>Judul Tag</th>
+                        <th width="15%" class="text-center">Status</th>
+                        <th width="15%" class="text-center">Aksi</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php $no=1; foreach($tag as $t):?>
+                        <tr>
+                            <td class="text-center"><?= $no++ ?></td>
+                            <tr>
+                                <td class="text-center"><?= $no++ ?></td>
+                                <td><?= $k['judul_tag'] ?></td>
+                                <td class="text-center">
+                                    <!-- Menampilkan status hasil JOIN dari Model -->
+                                     <span class="badge bg-info"><?= $t['judul_status'] ?></span>
+                                </td>
+                                <td class="text-center">
+                                    <button type="button" class="btn btn-warning btn-sm" data-bs-toggle="modal" data-bs-target="#editModal<?= $k['id_faq_tag'] ?>">Edit</button>
+                                    
