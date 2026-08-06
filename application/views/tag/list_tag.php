@@ -53,4 +53,16 @@
                                 </td>
                                 <td class="text-center">
                                     <button type="button" class="btn btn-warning btn-sm" data-bs-toggle="modal" data-bs-target="#editModal<?= $k['id_faq_tag'] ?>">Edit</button>
-                                    
+                                    <!-- Tombol Hapus (Soft Delete) -->
+                                    <a href="<?= site_url('kategori/hapus/'.$k['id_faq_kategori']) ?>" class="btn btn-danger btn-sm" onclick="return confirm('Yakin ingin menghapus data ini?')">Hapus</a>
+                                </td>
+                            </tr>
+
+                            <!-- Modal Edit Tag -->
+                            <div class="modal fade" id="editModal<?= $k['id_faq_tag'] ?>" tabindex="-1" aria-hidden="true">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title">Edit Tag</h5>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Tutup"></button>
+                                        </div>
