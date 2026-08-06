@@ -8,7 +8,7 @@ class Status_model extends CI_Model
 
     // Read: mengambil semua data status faq
     public function get_all(){
-        return $this->db->get($this-table)->result_array();
+        return $this->db->get($this->table)->result_array();
     }
 
     // Read: mengambil 1 data status berdasarkan ID (untuk edit)

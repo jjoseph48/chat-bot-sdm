@@ -13,7 +13,7 @@
         <h3 class="text-secondary">Belum Ada Data Tag</h3>
         <p class="text-muted mb-4">Tabel tag Anda saat ini masih kosong. Silakan tambahkan tag pertama Anda.</p>
         <!-- Tombol ini memicu Modal Tambah yang sama -->
-        <button type="button" class="btn btn-primary btn-lg px-4 rounded-pill shadow-sm" data-bs-toggle="modal" data-bs-targets="#tambahModal">
+        <button type="button" class="btn btn-primary btn-lg px-4 rounded-pill shadow-sm" onclick="bukaModal()">
             + Tambah Tag Pertama
         </button>
     </div>
@@ -21,20 +21,6 @@
     <!-- Modal Tambah Tag -->
     <div class="modal" id="tambahModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog">
-            <!-- <div class="modal-content text-start">
-                <div class="modal-header">
-                    <h5 class="modal-title">Tambah Tag Baru</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
-                <form action="<?= site_url('tag/simpan') ?>" method="post">
-                    <div class="modal-body">
-                        <div class="mb-3">
-                            <label class="form-label">Judul Tag <span class="text-danger">*</span></label>
-                            <input type="text" class="form-control" name="judul_tag" required>
-                        </div>
-                    </div>
-                </form>
-            </div> -->
             <form action="<?= site_url('tag/simpan') ?>" method="post" class="modal-content text-start">
                 <div class="modal-header">
                     <h5 class="modal-title">Tambah Tag Baru</h5>
