@@ -11,7 +11,7 @@ class Tag_model extends CI_Model
         $this->db->select('faq_tag.*, faq_status.judul_status');
         $this->db->from($this->table);
         // Menggabungkan tabel tag dengan tabel status
-        $this->db->join('faq_status', 'faq_status.id_faq_status = faq_tag.status_taq_fk', 'left');
+        $this->db->join('faq_status', 'faq_status.id_faq_status = faq_tag.status_tag_fk', 'left');
         // Filter: sembunyikan data yang memiliki status 2
         $this->db->where('faq_tag.status_tag_fk !=', 2);
 
