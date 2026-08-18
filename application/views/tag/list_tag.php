@@ -12,7 +12,7 @@
     <!-- Notifikasi Flashdata -->
      <?php if($this->session->flashdata('sukses')): ?>
         <div class="alert alert-success alert-dismissible fade show" role="alert">
-            <?= $this->session->flashdata('suskes'); ?>
+            <?= $this->session->flashdata('sukses'); ?>
             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Tutup"></button>
         </div>
     <?php endif; ?>
@@ -26,7 +26,7 @@
     <div class="card shadow-sm">
         <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
             <h5 class="mb-0">Daftar Tag FAQ</h5>
-            <button type="button" class="btn btn-light btn-sm fw-fold" data-bs-toggle="modal" data-bs-taregt="#tambahModal">
+            <button type="button" class="btn btn-light btn-sm fw-fold" data-bs-toggle="modal" data-bs-target="#tambahModal">
                 + Tambah Tag
             </button>
         </div>
