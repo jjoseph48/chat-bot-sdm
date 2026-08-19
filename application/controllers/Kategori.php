@@ -50,23 +50,20 @@ class Kategori extends CI_Controller
     public function ubah() {
         $id = $this->input->post('id_faq_kategori');
         $judul = $this->input->post('judul_kategori');
-        $status = $this->input->post('status_kategori_fk');
+        // $status = $this->input->post('status_kategori_fk');
 
         // Trapping lapis Controller: Pastikan ID, Judul dan Status ada
-        if(empty($id) || empty($judul) || empty($status)) {
+        if(empty($id) || empty($judul)) {
             $this->session->set_flashdata('error', 'Data tidak valid. ID atau Judul kosong!');
             redirect('kategori');
         }
 
-        $data = [
-            'judul_kategori' => $judul,
-            'status_kategori_fk' => $status
-        ];
+        $data = ['judul_kategori' => $judul];
 
 
         // Eksekusi Model dan cek nilai boolean yang dikembalikan
         if($this->Kategori_model->update($id, $data)) {
-            $this->session->set_flashdata('suskes', 'Data kategori berhasil diperbarui.');
+            $this->session->set_flashdata('sukses', 'Data kategori berhasil diperbarui.');
         } else {
             $this->session->set_flashdata('error', 'Terjadi kesalahan. Data gagal diperbarui.');
         }

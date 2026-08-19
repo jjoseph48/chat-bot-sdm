@@ -46,18 +46,15 @@ class Tag extends CI_Controller
     public function ubah() {
         $id = $this->input->post('id_faq_tag');
         $judul = $this->input->post('judul_tag');
-        $status = $this->input->post('status_faq_tag');
+        // $status = $this->input->post('status_faq_tag');
 
         // Trapping lapis Controller: Pastikan ID, Judul dan status ada
-        if(empty($id) || empty($judul) || empty($status)) {
+        if(empty($id) || empty($judul)) {
             $this->session->set_flashdata('error', 'Data tidak valid. ID atau Judul Kosong!');
             redirect('tag');
         }
 
-        $data = [
-            'judul_tag' => $judul,
-            'status_tag_fk' => $status
-        ];
+        $data = ['judul_tag' => $judul];
 
         // Eksekusi Model dan cek nilai boolean yang dikembalikan
         if($this->Tag_model->update($id, $data)) {
@@ -74,10 +71,10 @@ class Tag extends CI_Controller
         // Trapping
         if(empty($id)){show_404();}
 
-        $data = ['status_kategor_fk' => 2];
+        $data = ['status_tag_fk' => 2];
 
         if($this->Tag_model->update($id, $data)) {
-            $this->session->set_flashdata('Sukses'. 'Kategori berhasil diarsipkan.');
+            $this->session->set_flashdata('sukses', 'Tag berhasil diarsipkan.');
         }
 
         redirect('tag');

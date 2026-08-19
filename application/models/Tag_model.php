@@ -43,5 +43,16 @@ class Tag_model extends CI_Model
         return $this->db->delete($this->table);
     }
 
+    // UPDATE: Mengubah data tag yang sudah ada
+    public function update($id, $data) {
+        // Trapping: cegah update jika ID kosong
+        if(empty($id)) {
+            return false;
+        }
+
+        $this->db->where('id_faq_tag', $id);
+        return $this->db->update($this->table, $data);
+    }
+
 
 }
