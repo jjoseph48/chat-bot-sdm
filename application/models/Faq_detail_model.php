@@ -42,4 +42,9 @@ class Faq_detail_model extends CI_Model {
         $this->db->where($this->primary_key, $id);
         return $this->db->update($this->table, $data);
     }
+
+    // --- FITUR RELASI TAG (MANY-TO-MANY) ---
+    
+    // Menyimpan banyak Tag sekaligus ke tabel jembatan
+
 }

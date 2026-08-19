@@ -70,11 +70,11 @@
                                         
                                         <div class="mb-3">
                                             <label class="form-label">Kategori FAQ <span class="text-danger">*</span></label>
-                                            <select name="kategori_faq_fk" class="form-select" required>
+                                            <select name="id_faq_kategori_fk" class="form-select" required>
                                                 <option value="">-- Pilih Kategori --</option>
                                                 <!-- Looping Kategori untuk form Edit -->
                                                 <?php foreach($kategori as $k): ?>
-                                                    <option value="<?= $k['id_faq_kategori'] ?>" <?= ($k['id_faq_kategori'] == $f['kategori_faq_fk']) ? 'selected' : '' ?>>
+                                                    <option value="<?= $k['id_faq_kategori'] ?>" <?= ($k['id_faq_kategori'] == $f['id_faq_kategori_fk']) ? 'selected' : '' ?>>
                                                         <?= $k['judul_kategori'] ?>
                                                     </option>
                                                 <?php endforeach; ?>
