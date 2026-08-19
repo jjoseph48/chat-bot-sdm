@@ -8,6 +8,7 @@ class Faq_detail extends CI_Controller {
         // Memuat dua model sekaligus
         $this->load->model('Faq_detail_model');
         $this->load->model('Kategori_model');
+        $this->load->model('Tag_model');
     }
 
     // READ: Halaman utama
@@ -17,6 +18,13 @@ class Faq_detail extends CI_Controller {
 
         // Mengambil data Kategori untuk ditampilkan di Dropdown saat Tambah/Edit
         $data['kategori'] = $this->Kategori_model->get_all();
+
+        $data['tag_list'] = $this->Tag_model->get_all();
+
+        // Looping untuk menyisipkan data Tag ke masing-masing baris FAQ
+        foreach ($data['faq'] as $key => $value) {
+            $data['faq'][$key]['tags'] = $this->Faq_detail_model->get_tags_by_faq($value['id_faq_detail']);
+        }
 
         // Logika Empty State
         if(empty($data['faq'])) {
@@ -32,6 +40,7 @@ class Faq_detail extends CI_Controller {
         $jawaban    = $this->input->post('jawaban');
         // PERBAIKAN 1: Sesuaikan dengan 'name' di form dropdown HTML
         $kategori   = $this->input->post('id_faq_kategori_fk'); 
+        $tags = $this->input->post('faq_tag_id'); // Menangkap array dari Checkbox
 
         if(!empty($pertanyaan) && !empty($jawaban) && !empty($kategori)) {
             $data = [
@@ -46,6 +55,17 @@ class Faq_detail extends CI_Controller {
 
             // Menyimpan FAQ dan menangkap ID-nya
             $id_faq_baru = $this->Faq_detail_model->insert($data);
+
+            if(!empty($tags)) {
+                $data_tags = [];
+                foreach($tags as $id_tags) {
+                    $data_tags[] = [
+                        'faq_detail_id' => $id_faq_baru,
+                        'faq_tag_id' => $id_tag
+                    ];
+                }
+                $this->Faq_detail_model->insert_tags($data_tags);
+            }
 
             $this->session->set_flashdata('sukses', 'FAQ baru berhasil ditambahkan.');
         } else {

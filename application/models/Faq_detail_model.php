@@ -46,5 +46,23 @@ class Faq_detail_model extends CI_Model {
     // --- FITUR RELASI TAG (MANY-TO-MANY) ---
     
     // Menyimpan banyak Tag sekaligus ke tabel jembatan
+    public function insert_tags($data_tags){
+        if(!empty($data_tags)){
+            $this->db->insert_batch('faq_detail_has_tag', $data_tags);
+        }
+    }
+
+    public function delete_tags($id_faq) {
+        $this->db->where('faq_detail_id', $id_faq);
+        $this->db->delete('faq_detail_has_tag');
+    }
+
+    public function get_tags_by_faq($id_faq) {
+        $this->db->select('faq_tag.id_faq_tag');
+        $this->db->from('faq_detail_has_tag');
+        $this->db->join('faq_tag', 'faq_tag.id_faq_tag = faq_detail_has_tag.faq_tag_id');
+        $this->db->where('faq_detail_has_tag.faq_detail_id', $id_faq);
+        return $this->db->get()->result_array();
+    }
 
 }
