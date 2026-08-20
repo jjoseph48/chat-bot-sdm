@@ -39,6 +39,18 @@
                     </div>
 
                     <div class="mb-3">
+                        <label class="form-label d-block">Tag (Opsional)</label>
+                        <!-- Looping checkbox tag -->
+                        <?php foreach($tag_list as $t): ?>
+                            <div class="form-check form-check-inline">
+                                <!-- Perhatikan name="faq_tag_id[]" menggunakan kurung siku karena bisa pilih banyak -->
+                                <input class="form-check-input" type="checkbox" name="faq_tag_id[]" value="<?= $t['id_faq_tag'] ?>" id="tag_<?= $t['id_faq_tag'] ?>">
+                                <label class="form-check-label" for="tag_<?= $t['id_faq_tag'] ?>"><?= $t['judul_tag'] ?></label>
+                            </div>
+                        <?php endforeach; ?>
+                    </div>
+
+                    <div class="mb-3">
                         <label class="form-label">Pertanyaan <span class="text-danger">*</span></label>
                         <input type="text" class="form-control" name="pertanyaan" required placeholder="Tuliskan pertanyaan...">
                     </div>

@@ -37,6 +37,7 @@
                     <tr>
                         <th width="5%" class="text-center">No</th>
                         <th width="15%">Kategori</th>
+                        <th>Tag</th>
                         <th>Pertanyaan</th>
                         <th width="10%" class="text-center">Status</th>
                         <th width="15%" class="text-center">Aksi</th>
@@ -48,6 +49,16 @@
                         <td class="text-center"><?= $no++ ?></td>
                         <!-- Mengambil judul kategori dari hasil JOIN -->
                         <td><span class="badge bg-secondary"><?= $f['judul_kategori'] ?></span></td>
+                        <!-- Menampilkan Kumpulan Tag -->
+                        <td>
+                            <?php if(!empty($f['tags'])): ?>
+                                <?php foreach($f['tags'] as $tg): ?>
+                                    <span class="badge bg-primary mb-1"><?= $tg['judul_tag'] ?></span>
+                                <?php endforeach; ?>
+                            <?php else: ?>
+                                <span class="text-muted small">-</span>
+                            <?php endif; ?>
+                        </td>
                         <td><?= $f['pertanyaan'] ?></td>
                         <td class="text-center"><span class="badge bg-info"><?= $f['judul_status'] ?></span></td>
                         <td class="text-center">
@@ -79,6 +90,22 @@
                                                     </option>
                                                 <?php endforeach; ?>
                                             </select>
+                                        </div>
+
+                                        <div class="mb-3">
+                                            <label class="form-label d-block">Tag (Opsional)</label>
+                                            <?php 
+                                            // Mengekstrak ID Tag yang dimiliki FAQ ini ke dalam sebuah Array sederhana
+                                            $id_tag_dimiliki = array_column($f['tags'], 'id_faq_tag'); 
+                                            ?>
+                                            
+                                            <?php foreach($tag_list as $t): ?>
+                                                <div class="form-check form-check-inline">
+                                                    <!-- Logika PHP in_array akan mencentang kotak jika ID Tag ada di dalam array $id_tag_dimiliki -->
+                                                    <input class="form-check-input" type="checkbox" name="faq_tag_id[]" value="<?= $t['id_faq_tag'] ?>" id="edit_tag_<?= $f['id_faq_detail'] ?>_<?= $t['id_faq_tag'] ?>" <?= in_array($t['id_faq_tag'], $id_tag_dimiliki) ? 'checked' : '' ?>>
+                                                    <label class="form-check-label" for="edit_tag_<?= $f['id_faq_detail'] ?>_<?= $t['id_faq_tag'] ?>"><?= $t['judul_tag'] ?></label>
+                                                </div>
+                                            <?php endforeach; ?>
                                         </div>
 
                                         <div class="mb-3">
@@ -118,13 +145,25 @@
                 <div class="modal-body">
                     <div class="mb-3">
                         <label class="form-label">Kategori FAQ <span class="text-danger">*</span></label>
-                        <select name="kategori_faq_fk" class="form-select" required>
+                        <select name="id_faq_kategori_fk" class="form-select" required>
                             <option value="">-- Pilih Kategori --</option>
                             <!-- Looping Kategori untuk form Tambah -->
                             <?php foreach($kategori as $k): ?>
                                 <option value="<?= $k['id_faq_kategori'] ?>"><?= $k['judul_kategori'] ?></option>
                             <?php endforeach; ?>
                         </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label d-block">Tag (Opsional)</label>
+                        <!-- Looping checkbox tag -->
+                        <?php foreach($tag_list as $t): ?>
+                            <div class="form-check form-check-inline">
+                                <!-- Perhatikan name="faq_tag_id[]" menggunakan kurung siku karena bisa pilih banyak -->
+                                <input class="form-check-input" type="checkbox" name="faq_tag_id[]" value="<?= $t['id_faq_tag'] ?>" id="tag_<?= $t['id_faq_tag'] ?>">
+                                <label class="form-check-label" for="tag_<?= $t['id_faq_tag'] ?>"><?= $t['judul_tag'] ?></label>
+                            </div>
+                        <?php endforeach; ?>
                     </div>
 
                     <div class="mb-3">

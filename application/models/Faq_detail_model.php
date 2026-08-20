@@ -52,13 +52,15 @@ class Faq_detail_model extends CI_Model {
         }
     }
 
+    // Menghapus tag lama (digunakan saat proses Update / Edit FAQ)
     public function delete_tags($id_faq) {
         $this->db->where('faq_detail_id', $id_faq);
         $this->db->delete('faq_detail_has_tag');
     }
 
+    // Mengambil daftar Tag milik satu FAQ spesifik (untuk ditampilkan di List)
     public function get_tags_by_faq($id_faq) {
-        $this->db->select('faq_tag.id_faq_tag');
+        $this->db->select('faq_tag.id_faq_tag, faq_tag.judul_tag');
         $this->db->from('faq_detail_has_tag');
         $this->db->join('faq_tag', 'faq_tag.id_faq_tag = faq_detail_has_tag.faq_tag_id');
         $this->db->where('faq_detail_has_tag.faq_detail_id', $id_faq);

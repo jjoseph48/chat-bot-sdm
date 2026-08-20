@@ -38,27 +38,24 @@ class Faq_detail extends CI_Controller {
     public function simpan() {
         $pertanyaan = $this->input->post('pertanyaan');
         $jawaban    = $this->input->post('jawaban');
-        // PERBAIKAN 1: Sesuaikan dengan 'name' di form dropdown HTML
         $kategori   = $this->input->post('id_faq_kategori_fk'); 
         $tags = $this->input->post('faq_tag_id'); // Menangkap array dari Checkbox
 
         if(!empty($pertanyaan) && !empty($jawaban) && !empty($kategori)) {
-            $data = [
+            $data_faq = [
                 'pertanyaan'           => $pertanyaan,
                 'jawaban'              => $jawaban,
-                // PERBAIKAN 2: Sesuaikan nama kolom dengan struktur database
                 'id_faq_kategori_fk'   => $kategori, 
-                'faq_detail_status_fk' => 1,
-                // PERBAIKAN 3: Beri nilai default agar tidak ditolak database
-                'komentar'             => '-' 
+                'faq_detail_status_fk' => 1 // status aktif 
             ];
 
             // Menyimpan FAQ dan menangkap ID-nya
-            $id_faq_baru = $this->Faq_detail_model->insert($data);
+            $id_faq_baru = $this->Faq_detail_model->insert($data_faq);
 
+            // Jika ada Tag yg dicentang, simpan ke tabel jembatan
             if(!empty($tags)) {
                 $data_tags = [];
-                foreach($tags as $id_tags) {
+                foreach($tags as $id_tag) {
                     $data_tags[] = [
                         'faq_detail_id' => $id_faq_baru,
                         'faq_tag_id' => $id_tag
@@ -77,26 +74,41 @@ class Faq_detail extends CI_Controller {
 
     // UPDATE: Mengubah data
     public function ubah() {
-        $id         = $this->input->post('id_faq_detail');
+        $id = $this->input->post('id_faq_detail');
         $pertanyaan = $this->input->post('pertanyaan');
-        $jawaban    = $this->input->post('jawaban');
-        // PERBAIKAN 4: Ubah nama POST mengikuti standar form
-        $kategori   = $this->input->post('id_faq_kategori_fk'); 
+        $jawaban = $this->input->post('jawaban');
+        $kategori = $this->input->post('id_faq_kategori_fk');
+        $tags = $this->input->post('faq_tag_id');
 
         if(empty($id) || empty($pertanyaan) || empty($jawaban) || empty($kategori)) {
             $this->session->set_flashdata('error', 'Data tidak valid. Pastikan semua kolom terisi!');
             redirect('faq_detail');
         }
 
-        $data = [
-            'pertanyaan'         => $pertanyaan,
-            'jawaban'            => $jawaban,
-            // PERBAIKAN 5: Sesuaikan nama kolom untuk proses Edit
-            'id_faq_kategori_fk' => $kategori 
+        $data_faq = [
+            'pertanyaan' => $pertanyaan,
+            'jawaban' => $jawaban,
+            'id_faq_kategori_fk' => $kategori
         ];
 
-        if($this->Faq_detail_model->update($id, $data)) {
-            $this->session->set_flashdata('sukses', 'Data FAQ berhasil diperbarui.');
+        // update data utama FAQ
+        if ($this->Faq_detail_model->update($id, $data_faq)) {
+
+            // Hapus semua riwayat Tag lama di tabel jembatan
+            $this->Faq_detail_model->delete_tags($id);
+
+            if(!empty(tags)) {
+                $data_tags = [];
+                foreach($tags as $id_tag) {
+                    $data_tags[] = [
+                        'faq_detail_id' => $id,
+                        'faq_tag_id' => $id_tag
+                    ];
+                }
+                $this->Faq_detail_model->insert_tags($data_tags);
+            }
+
+            $this->session->set_flashdata('sukses', 'Data FAQ dan Tag berhasil diperbarui.');
         } else {
             $this->session->set_flashdata('error', 'Terjadi kesalahan saat memperbarui data.');
         }
