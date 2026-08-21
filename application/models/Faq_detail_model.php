@@ -67,4 +67,13 @@ class Faq_detail_model extends CI_Model {
         return $this->db->get()->result_array();
     }
 
+    // Fitur mesin Chatbot (TF-ID Preparation)
+    // Mengambil semua FAQ aktif sebagai Corpus (kumpulan dokumen)
+    public function get_semua_faq_aktif() {
+        $this->db->select('id_faq_detail, pertanyaan, jawaban');
+        $this->db->from($this->table);
+        $this->db->where('faq_detail_status_fk', 1);
+        return $this->db->get()->result_array();
+    }
+
 }
