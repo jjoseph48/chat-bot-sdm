@@ -32,6 +32,19 @@
             </button>
         </div>
         <div class="card-body">
+            <!-- Barisan Tombol Import & Unduh -->
+            <div class="d-flex mb-3">
+                <a href="<?= site_url('faq_detail/unduh_template') ?>" class="btn btn-outline-info me-3">
+                    📥 Unduh Template
+                </a>
+                
+                <form action="<?= site_url('faq_detail/import_excel') ?>" method="post" enctype="multipart/form-data" class="d-flex align-items-center">
+                    <input type="file" name="file_excel" class="form-control me-2" accept=".xlsx" required style="width: 250px;">
+                    <button type="submit" class="btn btn-success">
+                        📤 Import
+                    </button>
+                </form>
+            </div>
             <table class="table table-bordered table-hover">
                 <thead class="table-light">
                     <tr>

@@ -1,6 +1,9 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
 
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Reader\Xlsx;
+
 class Faq_detail extends CI_Controller {
 
     public function __construct() {
@@ -127,6 +130,129 @@ class Faq_detail extends CI_Controller {
             $this->session->set_flashdata('sukses', 'FAQ berhasil dihapus dari daftar.');
         }
 
+        redirect('faq_detail');
+    }
+
+    public function unduh_template() {
+        $spreadsheet = new Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet();
+
+        // Header
+        $sheet->setCellValue('A1', 'Pertanyaan');
+        $sheet->setCellValue('B1', 'Jawaban');
+        $sheet->setCellValue('C1', 'Kategori');
+        $sheet->setCellValue('D1', 'Tag (Pisahkan dengan koma)');
+
+        // Contoh Data
+        $sheet->setCellValue('A2', 'Bagaimana cara klaim cuti?');
+        $sheet->setCellValue('B2', 'Melalui menu pengajuan di portal SDM.');
+        $sheet->setCellValue('C2', 'Kepegawaian');
+        $sheet->setCellValue('D2', 'Cuti, Portal, Absensi');
+
+        // Styling
+        $sheet->getStyle('A1:D1')->getFont()->setBold(true);
+
+        $writer = new Xlsx($spreadsheet);
+        $filename = 'Template_Import_FAQ.xlsx';
+
+        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        header('Content-Disposition: attachment;filename="'. $filename .'"');
+        header('Cache-Control: max-age=0');
+        $writer->save('php://output');
+        exit;
+    }
+
+    // Fungsi: Memproses import excel
+    public function import_excel() {
+        $file_mimes = ['application/vnd.ms-excel', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'];
+        
+        if(isset($_FILES['file_excel']['name']) && in_array($_FILES['file_excel']['type'], $file_mimes)) {
+            $reader = new Xlsx(); 
+            $spreadsheet = $reader->load($_FILES['file_excel']['tmp_name']);
+            $sheetData = $spreadsheet->getActiveSheet()->toArray();
+            
+            // Memulai pengaman transaksi database
+            $this->db->trans_start(); 
+            
+            for($i = 1; $i < count($sheetData); $i++) { 
+                $pertanyaan = $sheetData[$i][0];
+                $jawaban = $sheetData[$i][1];
+                $kategori_teks = $sheetData[$i][2];
+                $tag_teks = $sheetData[$i][3];
+                
+                // Proses hanya jika pertanyaan dan jawaban tidak kosong
+                if(!empty($pertanyaan) && !empty($jawaban)) {
+                    
+                    // 1. LOGIKA KATEGORI OTOMATIS
+                    $id_kategori = null;
+                    if(!empty($kategori_teks)) {
+                        $kategori_teks = trim($kategori_teks);
+                        $cek_kategori = $this->db->get_where('faq_kategori', ['judul_kategori' => $kategori_teks])->row();
+                        
+                        if($cek_kategori) {
+                            $id_kategori = $cek_kategori->id_faq_kategori;
+                        } else {
+                            $this->db->insert('faq_kategori', ['judul_kategori' => $kategori_teks, 'status_kategori_fk' => 1]);
+                            $id_kategori = $this->db->insert_id();
+                        }
+                    }
+
+                    // 2. SIMPAN FAQ UTAMA
+                    $data_faq = [
+                        'pertanyaan' => $pertanyaan,
+                        'jawaban' => $jawaban,
+                        'id_faq_kategori_fk' => $id_kategori,
+                        'faq_detail_status_fk' => 1
+                    ];
+                    $this->db->insert('faq_detail', $data_faq);
+                    $id_faq_baru = $this->db->insert_id(); // Tangkap ID FAQ baru
+
+                    // 3. LOGIKA TAG OTOMATIS (DIPECAH DENGAN KOMA)
+                    if(!empty($tag_teks)) {
+                        $tags_array = explode(',', $tag_teks);
+                        $data_jembatan_tag = [];
+                        
+                        foreach($tags_array as $t) {
+                            $t = trim($t); // Hapus spasi di awal/akhir
+                            if(empty($t)) continue; 
+                            
+                            $cek_tag = $this->db->get_where('faq_tag', ['judul_tag' => $t])->row();
+                            if($cek_tag) {
+                                $id_tag = $cek_tag->id_faq_tag;
+                            } else {
+                                $this->db->insert('faq_tag', ['judul_tag' => $t, 'status_tag_fk' => 1]);
+                                $id_tag = $this->db->insert_id();
+                            }
+                            
+                            // Siapkan data untuk tabel jembatan
+                            $data_jembatan_tag[] = [
+                                'faq_detail_id' => $id_faq_baru,
+                                'faq_tag_id' => $id_tag
+                            ];
+                        }
+                        
+                        // Simpan semua tag sekaligus ke tabel jembatan
+                        if(!empty($data_jembatan_tag)) {
+                            $this->db->insert_batch('faq_detail_has_tag', $data_jembatan_tag);
+                        }
+                    }
+                }
+            }
+            
+            // Selesai transaksi database
+            $this->db->trans_complete(); 
+            
+            // Cek apakah ada error dari database selama proses berlangsung
+            if ($this->db->trans_status() === FALSE) {
+                $this->session->set_flashdata('error', 'Gagal! Terjadi kesalahan pada database saat mengimpor.');
+            } else {
+                $this->session->set_flashdata('sukses', 'Data FAQ beserta Kategori dan Tag berhasil diimpor!');
+            }
+            
+        } else {
+            $this->session->set_flashdata('error', 'Format file tidak valid. Gunakan file .xlsx');
+        }
+        
         redirect('faq_detail');
     }
 
