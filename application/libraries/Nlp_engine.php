@@ -16,10 +16,13 @@ class Nlp_engine {
         $corpus = [];
         $dokumen = [];
         
-        // 1. Gabungkan semua pertanyaan FAQ ke dalam Corpus
+        // 1. Gabungkan pertanyaan FAQ DAN TAG ke dalam Corpus
         foreach ($data_faq as $faq) {
-            // Baris ini yang tadi memicu error karena mencari fungsi tokenize
-            $dokumen[] = $this->tokenize($faq['pertanyaan']);
+            // Gabungkan teks pertanyaan dengan teks dari tag (jika ada)
+            $teks_gabungan = $faq['pertanyaan'] . ' ' . (isset($faq['kumpulan_tag']) ? $faq['kumpulan_tag'] : '');
+            
+            // Masukkan teks gabungan tersebut ke proses pemecahan kata (tokenization)
+            $dokumen[] = $this->tokenize($teks_gabungan);
         }
         $dokumen_input = $this->tokenize($input_user);
         array_push($dokumen, $dokumen_input); // Masukkan input user di akhir array
