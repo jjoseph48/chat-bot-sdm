@@ -3,6 +3,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Reader\Xlsx;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx as WriterXlsx;
 
 class Faq_detail extends CI_Controller {
 
@@ -144,15 +145,15 @@ class Faq_detail extends CI_Controller {
         $sheet->setCellValue('D1', 'Tag (Pisahkan dengan koma)');
 
         // Contoh Data
-        $sheet->setCellValue('A2', 'Bagaimana cara klaim cuti?');
-        $sheet->setCellValue('B2', 'Melalui menu pengajuan di portal SDM.');
-        $sheet->setCellValue('C2', 'Kepegawaian');
-        $sheet->setCellValue('D2', 'Cuti, Portal, Absensi');
+        $sheet->setCellValue('A2', 'Apa itu manajemen talenta?');
+        $sheet->setCellValue('B2', 'Manajemen talenta adalah sistem manajemen karir PNS');
+        $sheet->setCellValue('C2', 'Informasi umum dan akses aplikasi');
+        $sheet->setCellValue('D2', 'Definisi manajemen talenta');
 
         // Styling
         $sheet->getStyle('A1:D1')->getFont()->setBold(true);
 
-        $writer = new Xlsx($spreadsheet);
+        $writer = new WriterXlsx($spreadsheet);
         $filename = 'Template_Import_FAQ.xlsx';
 
         header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');

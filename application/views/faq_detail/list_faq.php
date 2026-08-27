@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Kelola Data FAQ</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
 </head>
 <body class="bg-light">
 
@@ -108,17 +109,16 @@
                                         <div class="mb-3">
                                             <label class="form-label d-block">Tag (Opsional)</label>
                                             <?php 
-                                            // Mengekstrak ID Tag yang dimiliki FAQ ini ke dalam sebuah Array sederhana
-                                            $id_tag_dimiliki = array_column($f['tags'], 'id_faq_tag'); 
+                                                // Mengekstrak ID Tag yang dimiliki FAQ ini
+                                                $id_tag_dimiliki = array_column($f['tags'], 'id_faq_tag'); 
                                             ?>
-                                            
-                                            <?php foreach($tag_list as $t): ?>
-                                                <div class="form-check form-check-inline">
-                                                    <!-- Logika PHP in_array akan mencentang kotak jika ID Tag ada di dalam array $id_tag_dimiliki -->
-                                                    <input class="form-check-input" type="checkbox" name="faq_tag_id[]" value="<?= $t['id_faq_tag'] ?>" id="edit_tag_<?= $f['id_faq_detail'] ?>_<?= $t['id_faq_tag'] ?>" <?= in_array($t['id_faq_tag'], $id_tag_dimiliki) ? 'checked' : '' ?>>
-                                                    <label class="form-check-label" for="edit_tag_<?= $f['id_faq_detail'] ?>_<?= $t['id_faq_tag'] ?>"><?= $t['judul_tag'] ?></label>
-                                                </div>
-                                            <?php endforeach; ?>
+                                            <select name="faq_tag_id[]" class="form-control select2-multi" multiple="multiple">
+                                                <?php foreach($tag_list as $t): ?>
+                                                    <option value="<?= $t['id_faq_tag'] ?>" <?= in_array($t['id_faq_tag'], $id_tag_dimiliki) ? 'selected' : '' ?>>
+                                                        <?= $t['judul_tag'] ?>
+                                                    </option>
+                                                <?php endforeach; ?>
+                                            </select>
                                         </div>
 
                                         <div class="mb-3">
@@ -169,14 +169,11 @@
 
                     <div class="mb-3">
                         <label class="form-label d-block">Tag (Opsional)</label>
-                        <!-- Looping checkbox tag -->
-                        <?php foreach($tag_list as $t): ?>
-                            <div class="form-check form-check-inline">
-                                <!-- Perhatikan name="faq_tag_id[]" menggunakan kurung siku karena bisa pilih banyak -->
-                                <input class="form-check-input" type="checkbox" name="faq_tag_id[]" value="<?= $t['id_faq_tag'] ?>" id="tag_<?= $t['id_faq_tag'] ?>">
-                                <label class="form-check-label" for="tag_<?= $t['id_faq_tag'] ?>"><?= $t['judul_tag'] ?></label>
-                            </div>
-                        <?php endforeach; ?>
+                        <select name="faq_tag_id[]" class="form-control select2-multi" multiple="multiple">
+                            <?php foreach($tag_list as $t): ?>
+                                <option value="<?= $t['id_faq_tag'] ?>"><?= $t['judul_tag'] ?></option>
+                            <?php endforeach; ?>
+                        </select>
                     </div>
 
                     <div class="mb-3">
@@ -199,5 +196,24 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+<script>
+    $(document).ready(function() {
+        // Kita gunakan .each() agar berlaku untuk form Tambah maupun form Edit
+        $('.select2-multi').each(function() {
+            // Mencari elemen modal terdekat yang membungkus form ini
+            var modalParent = $(this).closest('.modal');
+            
+            $(this).select2({
+                placeholder: "Cari dan pilih tag...",
+                allowClear: true,
+                width: '100%',
+                // INI KUNCI UTAMANYA: Tempelkan dropdown ke dalam modal terkait
+                dropdownParent: modalParent.length ? modalParent : $(document.body)
+            });
+        });
+    });
+</script>
 </body>
 </html>
