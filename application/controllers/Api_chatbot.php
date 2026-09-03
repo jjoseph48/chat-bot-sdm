@@ -33,7 +33,7 @@ class Api_chatbot extends CI_Controller {
         $jawaban_terbaik = $hasil_kemiripan[0];
 
         // Threshold (Batas Toleransi Skor) - Jika skor Cosine terlalu rendah, berarti tidak nyambung
-        if ($jawaban_terbaik['skor'] > 0.1) { 
+        if ($jawaban_terbaik['skor'] > 0.25) { 
             $balasan_bot = $jawaban_terbaik['jawaban'];
         } else {
             $balasan_bot = "Maaf, saya tidak memahami pertanyaan Anda. Bisa dijelaskan dengan cara lain?";
