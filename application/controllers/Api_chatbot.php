@@ -7,6 +7,7 @@ class Api_chatbot extends CI_Controller {
         parent::__construct();
         $this->load->model('Faq_detail_model');
         $this->load->library('Nlp_engine'); // Memanggil library TF-IDF kita
+        $this->load->database();
         header('Content-Type: application/json');
     }
 
@@ -29,16 +30,50 @@ class Api_chatbot extends CI_Controller {
         // 2. Hitung kemiripan menggunakan TF-IDF & Cosine Similarity
         $hasil_kemiripan = $this->nlp_engine->hitung_kemiripan($pesan_masuk, $data_faq);
 
-        // 3. Ambil hasil terbaik (skor tertinggi)
-        $jawaban_terbaik = $hasil_kemiripan[0];
+        // 4. Ekstrak Top-1 dan Filter Top-3 (hanya ambil ID dan Skor)
+        $jawaban_terbaik  = $hasil_kemiripan[0];
 
-        // Threshold (Batas Toleransi Skor) - Jika skor Cosine terlalu rendah, berarti tidak nyambung
-        if ($jawaban_terbaik['skor'] > 0.25) { 
+        $top_3_kandidat = [];
+        $batas_loop = min(3, count($hasil_kemiripan));
+
+        for($i = 0; $i < $batas_loop; $i++) {
+            $top_3_kandidat[] = [
+                'id_faq' => $hasil_kemiripan[$i]['id_faq'],
+                'skor' => round($hasil_kemiripan[$i]['skor'], 4)
+            ];
+        }
+        // $jawaban_terbaik = $hasil_kemiripan[0];
+
+        // // Threshold (Batas Toleransi Skor) - Jika skor Cosine terlalu rendah, berarti tidak nyambung
+        // if ($jawaban_terbaik['skor'] > 0.25) { 
+        //     $balasan_bot = $jawaban_terbaik['jawaban'];
+        // } else {
+        //     $balasan_bot = "Maaf, saya tidak memahami pertanyaan Anda. Bisa dijelaskan dengan cara lain?";
+        // }
+
+        // 4. Threshold Decision (Batas Toleransi: 0.25)
+        $threshold = 0.25;
+        $is_match = ($jawaban_terbaik['skor'] >= $threshold) ? 1 : 0;
+
+        if($is_match) {
             $balasan_bot = $jawaban_terbaik['jawaban'];
         } else {
-            $balasan_bot = "Maaf, saya tidak memahami pertanyaan Anda. Bisa dijelaskan dengan cara lain?";
+            $balasan_bot = "Maaf, Bisma tidak memahami pertanyaan Anda. Bisa dijelaskan dengan cara lain atau coba gunakan kata kunci yang lebih spesifik?";
         }
 
+        // 5. SIMPAN KE TABEL log_chatbot
+        $data_log = [
+            'pesan_user' => $pesan_masuk,
+            'top_1_id_faq' => $jawaban_terbaik['id_faq'],
+            'top_1_skor' => round($jawaban_terbaik['skor'], 4),
+            'top_3_kandidat' => json_encode($top_3_kandidat),
+            'status_match' => $is_match,
+            'waktu_interaksi' => date('Y-m-d H:i:s')
+        ];
+
+        $this->db->insert('log_chatbot', $data_log);
+
+        // 6. Kembalikan response ke UI Chatbot
         echo json_encode([
             'status' => 'sukses',
             'pesan_user' => $pesan_masuk,

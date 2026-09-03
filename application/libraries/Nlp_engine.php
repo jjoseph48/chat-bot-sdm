@@ -3,31 +3,33 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 class Nlp_engine {
 
-    // --- FUNGSI INI YANG SEBELUMNYA HILANG ATAU SALAH TEMPAT ---
-    // Memecah teks menjadi array kata (Tokenization & Case Folding sederhana)
+    // [DIPERBAIKI] Tokenization yang jauh lebih bersih dan kebal spasi ganda
     private function tokenize($teks) {
-        $teks = strtolower($teks);
-        $teks = preg_replace('/[^a-z0-9 ]/', '', $teks); // Hapus tanda baca
-        return explode(' ', $teks);
+        $teks = strtolower(trim($teks));
+        $teks = preg_replace('/[^a-z0-9\s]/', '', $teks); 
+        
+        // Memecah teks berdasarkan spasi tunggal maupun ganda
+        $tokens = preg_split('/\s+/', $teks);
+        
+        // Membuang elemen array yang kosong agar perhitungan pembagi (TF) lebih akurat
+        return array_filter($tokens); 
     }
 
     // Menghitung Cosine Similarity antara input pengguna dan daftar FAQ
     public function hitung_kemiripan($input_user, $data_faq) {
-        $corpus = [];
         $dokumen = [];
         
         // 1. Gabungkan pertanyaan FAQ DAN TAG ke dalam Corpus
         foreach ($data_faq as $faq) {
-            // Gabungkan teks pertanyaan dengan teks dari tag (jika ada)
             $teks_gabungan = $faq['pertanyaan'] . ' ' . (isset($faq['kumpulan_tag']) ? $faq['kumpulan_tag'] : '');
-            
-            // Masukkan teks gabungan tersebut ke proses pemecahan kata (tokenization)
             $dokumen[] = $this->tokenize($teks_gabungan);
         }
+        
+        // 2. Masukkan input user di akhir array
         $dokumen_input = $this->tokenize($input_user);
-        array_push($dokumen, $dokumen_input); // Masukkan input user di akhir array
+        array_push($dokumen, $dokumen_input);       
 
-        // 2. Bangun Kamus Kata (Vocabulary)
+        // 3. Bangun Kamus Kata (Vocabulary)
         $vocabulary = [];
         foreach ($dokumen as $doc) {
             foreach ($doc as $kata) {
@@ -37,7 +39,7 @@ class Nlp_engine {
             }
         }
 
-        // 3. Hitung DF (Document Frequency) & IDF (Inverse Document Frequency)
+        // 4. Hitung DF & IDF
         $jumlah_dokumen = count($dokumen);
         $idf = [];
         foreach ($vocabulary as $kata) {
@@ -47,11 +49,10 @@ class Nlp_engine {
                     $df++;
                 }
             }
-            // Rumus IDF: Log(N / DF)
             $idf[$kata] = log($jumlah_dokumen / $df);
         }
 
-        // 4. Hitung bobot TF-IDF untuk setiap dokumen
+        // 5. Hitung bobot TF-IDF
         $tfidf_matrix = [];
         foreach ($dokumen as $i => $doc) {
             foreach ($vocabulary as $kata) {
@@ -65,7 +66,7 @@ class Nlp_engine {
             }
         }
 
-        // 5. Hitung Cosine Similarity antara Input User (index terakhir) dan setiap FAQ
+        // 6. Hitung Cosine Similarity
         $index_input = $jumlah_dokumen - 1;
         $vektor_input = $tfidf_matrix[$index_input];
         
@@ -94,7 +95,7 @@ class Nlp_engine {
             ];
         }
 
-        // Urutkan dari skor tertinggi ke terendah
+        // 7. Urutkan dari skor tertinggi ke terendah
         usort($hasil_skor, function($a, $b) {
             return $b['skor'] <=> $a['skor'];
         });
