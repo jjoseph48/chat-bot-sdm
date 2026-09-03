@@ -53,6 +53,7 @@
                         <th width="15%">Kategori</th>
                         <th>Tag</th>
                         <th>Pertanyaan</th>
+                        <th width="10%" class="text-center">Opsi Alternatif</th>
                         <th width="10%" class="text-center">Status</th>
                         <th width="15%" class="text-center">Aksi</th>
                     </tr>
@@ -61,9 +62,7 @@
                     <?php $no = 1; foreach($faq as $f): ?>
                     <tr>
                         <td class="text-center"><?= $no++ ?></td>
-                        <!-- Mengambil judul kategori dari hasil JOIN -->
                         <td><span class="badge bg-secondary"><?= $f['judul_kategori'] ?></span></td>
-                        <!-- Menampilkan Kumpulan Tag -->
                         <td>
                             <?php if(!empty($f['tags'])): ?>
                                 <?php foreach($f['tags'] as $tg): ?>
@@ -74,6 +73,16 @@
                             <?php endif; ?>
                         </td>
                         <td><?= $f['pertanyaan'] ?></td>
+                        
+                        <!-- Kolom Indikator Opsi Alternatif Baru -->
+                        <td class="text-center">
+                            <?php if(isset($f['is_fallback_option']) && $f['is_fallback_option'] == 1): ?>
+                                <span class="badge bg-success">Ya</span>
+                            <?php else: ?>
+                                <span class="badge bg-light text-dark border">Tidak</span>
+                            <?php endif; ?>
+                        </td>
+
                         <td class="text-center"><span class="badge bg-info"><?= $f['judul_status'] ?></span></td>
                         <td class="text-center">
                             <button type="button" class="btn btn-warning btn-sm" data-bs-toggle="modal" data-bs-target="#editModal<?= $f['id_faq_detail'] ?>">Edit</button>
@@ -97,7 +106,6 @@
                                             <label class="form-label">Kategori FAQ <span class="text-danger">*</span></label>
                                             <select name="id_faq_kategori_fk" class="form-select" required>
                                                 <option value="">-- Pilih Kategori --</option>
-                                                <!-- Looping Kategori untuk form Edit -->
                                                 <?php foreach($kategori as $k): ?>
                                                     <option value="<?= $k['id_faq_kategori'] ?>" <?= ($k['id_faq_kategori'] == $f['id_faq_kategori_fk']) ? 'selected' : '' ?>>
                                                         <?= $k['judul_kategori'] ?>
@@ -109,7 +117,6 @@
                                         <div class="mb-3">
                                             <label class="form-label d-block">Tag (Opsional)</label>
                                             <?php 
-                                                // Mengekstrak ID Tag yang dimiliki FAQ ini
                                                 $id_tag_dimiliki = array_column($f['tags'], 'id_faq_tag'); 
                                             ?>
                                             <select name="faq_tag_id[]" class="form-control select2-multi" multiple="multiple">
@@ -119,6 +126,16 @@
                                                     </option>
                                                 <?php endforeach; ?>
                                             </select>
+                                        </div>
+
+                                        <!-- Pilihan Opsi Alternatif (Edit) -->
+                                        <div class="mb-3">
+                                            <label class="form-label">Jadikan Opsi Alternatif (Jika bot tidak paham)? <span class="text-danger">*</span></label>
+                                            <select name="is_fallback_option" class="form-select" required>
+                                                <option value="0" <?= (isset($f['is_fallback_option']) && $f['is_fallback_option'] == 0) ? 'selected' : '' ?>>Tidak</option>
+                                                <option value="1" <?= (isset($f['is_fallback_option']) && $f['is_fallback_option'] == 1) ? 'selected' : '' ?>>Ya</option>
+                                            </select>
+                                            <small class="text-muted d-block mt-1">Maksimal pilih 3 FAQ unggulan agar tampilan bot tetap rapi.</small>
                                         </div>
 
                                         <div class="mb-3">
@@ -160,7 +177,6 @@
                         <label class="form-label">Kategori FAQ <span class="text-danger">*</span></label>
                         <select name="id_faq_kategori_fk" class="form-select" required>
                             <option value="">-- Pilih Kategori --</option>
-                            <!-- Looping Kategori untuk form Tambah -->
                             <?php foreach($kategori as $k): ?>
                                 <option value="<?= $k['id_faq_kategori'] ?>"><?= $k['judul_kategori'] ?></option>
                             <?php endforeach; ?>
@@ -174,6 +190,16 @@
                                 <option value="<?= $t['id_faq_tag'] ?>"><?= $t['judul_tag'] ?></option>
                             <?php endforeach; ?>
                         </select>
+                    </div>
+
+                    <!-- Pilihan Opsi Alternatif (Tambah) -->
+                    <div class="mb-3">
+                        <label class="form-label">Jadikan Opsi Alternatif (Jika bot tidak paham)? <span class="text-danger">*</span></label>
+                        <select name="is_fallback_option" class="form-select" required>
+                            <option value="0" selected>Tidak</option>
+                            <option value="1">Ya</option>
+                        </select>
+                        <small class="text-muted d-block mt-1">Maksimal pilih 3 FAQ unggulan agar tampilan bot tetap rapi.</small>
                     </div>
 
                     <div class="mb-3">
@@ -200,16 +226,12 @@
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 <script>
     $(document).ready(function() {
-        // Kita gunakan .each() agar berlaku untuk form Tambah maupun form Edit
         $('.select2-multi').each(function() {
-            // Mencari elemen modal terdekat yang membungkus form ini
             var modalParent = $(this).closest('.modal');
-            
             $(this).select2({
                 placeholder: "Cari dan pilih tag...",
                 allowClear: true,
                 width: '100%',
-                // INI KUNCI UTAMANYA: Tempelkan dropdown ke dalam modal terkait
                 dropdownParent: modalParent.length ? modalParent : $(document.body)
             });
         });

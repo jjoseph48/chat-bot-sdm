@@ -45,7 +45,7 @@
                         <span class="position-absolute bottom-0 end-0 bg-success border border-2 border-white rounded-circle" style="width: 14px; height: 14px;"></span>
                     </div>
                     <div>
-                        <h5 class="mb-0 fw-bold text-dark" style="font-size: 1.1rem;">Bisma</h5>
+                        <h5 class="mb-0 fw-bold text-dark" style="font-size: 1.1rem;">Bisma - Biro SDMO Assistant</h5>
                         <small class="text-muted d-block" style="font-size: 0.85rem;">Online</small>
                     </div>
                 </div>
@@ -134,11 +134,11 @@
         .then(response => response.json())
         .then(data => {
             loadingElemen.classList.remove('typing-indicator'); 
-            loadingElemen.textContent = data.balasan;
+            loadingElemen.innerHTML = data.balasan; // <-- UBAH DI SINI
         })
         .catch(error => {
             loadingElemen.classList.remove('typing-indicator');
-            loadingElemen.textContent = 'Maaf, terjadi kesalahan koneksi ke server NLP.';
+            loadingElemen.innerHTML = 'Maaf, terjadi kesalahan koneksi ke server NLP.'; // <-- UBAH DI SINI
             console.error('Error Fetching Data:', error);
         });
     });

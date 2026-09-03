@@ -87,4 +87,12 @@ class Faq_detail_model extends CI_Model {
 
     }
 
+    public function get_faq_alternatif() {
+        $this->db->select('pertanyaan');
+        $this->db->where('is_fallback_option', 1);
+        // Asumsi: Hanya ambil FAQ yang statusnya aktif
+        $this->db->limit(3); 
+        return $this->db->get('faq_detail')->result_array();
+    }
+
 }

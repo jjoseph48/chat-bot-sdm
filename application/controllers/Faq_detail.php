@@ -43,14 +43,18 @@ class Faq_detail extends CI_Controller {
         $pertanyaan = $this->input->post('pertanyaan');
         $jawaban    = $this->input->post('jawaban');
         $kategori   = $this->input->post('id_faq_kategori_fk'); 
-        $tags = $this->input->post('faq_tag_id'); // Menangkap array dari Checkbox
+        $tags       = $this->input->post('faq_tag_id'); // Menangkap array dari Checkbox
+        
+        // Menangkap opsi alternatif (default 0 jika kosong)
+        $is_fallback = $this->input->post('is_fallback_option') ? $this->input->post('is_fallback_option') : 0; 
 
         if(!empty($pertanyaan) && !empty($jawaban) && !empty($kategori)) {
             $data_faq = [
                 'pertanyaan'           => $pertanyaan,
                 'jawaban'              => $jawaban,
                 'id_faq_kategori_fk'   => $kategori, 
-                'faq_detail_status_fk' => 1 // status aktif 
+                'faq_detail_status_fk' => 1, // status aktif 
+                'is_fallback_option'   => $is_fallback // Menyimpan pilihan Opsi Alternatif
             ];
 
             // Menyimpan FAQ dan menangkap ID-nya
@@ -83,6 +87,9 @@ class Faq_detail extends CI_Controller {
         $jawaban = $this->input->post('jawaban');
         $kategori = $this->input->post('id_faq_kategori_fk');
         $tags = $this->input->post('faq_tag_id');
+        
+        // Menangkap opsi alternatif
+        $is_fallback = $this->input->post('is_fallback_option') ? $this->input->post('is_fallback_option') : 0;
 
         if(empty($id) || empty($pertanyaan) || empty($jawaban) || empty($kategori)) {
             $this->session->set_flashdata('error', 'Data tidak valid. Pastikan semua kolom terisi!');
@@ -90,9 +97,10 @@ class Faq_detail extends CI_Controller {
         }
 
         $data_faq = [
-            'pertanyaan' => $pertanyaan,
-            'jawaban' => $jawaban,
-            'id_faq_kategori_fk' => $kategori
+            'pertanyaan'         => $pertanyaan,
+            'jawaban'            => $jawaban,
+            'id_faq_kategori_fk' => $kategori,
+            'is_fallback_option' => $is_fallback // Memperbarui pilihan Opsi Alternatif
         ];
 
         // update data utama FAQ
@@ -101,7 +109,8 @@ class Faq_detail extends CI_Controller {
             // Hapus semua riwayat Tag lama di tabel jembatan
             $this->Faq_detail_model->delete_tags($id);
 
-            if(!empty(tags)) {
+            // [PERBAIKAN BUG]: Sebelumnya tertulis !empty(tags), sudah diperbaiki menjadi !empty($tags)
+            if(!empty($tags)) {
                 $data_tags = [];
                 foreach($tags as $id_tag) {
                     $data_tags[] = [
@@ -124,7 +133,6 @@ class Faq_detail extends CI_Controller {
     public function hapus($id = null) {
         if(empty($id)) { show_404(); }
 
-        // PERBAIKAN 6: Sesuaikan nama kolom status untuk proses Hapus
         $data = ['faq_detail_status_fk' => 2]; 
 
         if($this->Faq_detail_model->update($id, $data)) {
@@ -204,9 +212,10 @@ class Faq_detail extends CI_Controller {
                         'jawaban' => $jawaban,
                         'id_faq_kategori_fk' => $id_kategori,
                         'faq_detail_status_fk' => 1
+                        // is_fallback_option akan otomatis menjadi 0 berdasarkan struktur default MariaDB
                     ];
                     $this->db->insert('faq_detail', $data_faq);
-                    $id_faq_baru = $this->db->insert_id(); // Tangkap ID FAQ baru
+                    $id_faq_baru = $this->db->insert_id(); 
 
                     // 3. LOGIKA TAG OTOMATIS (DIPECAH DENGAN KOMA)
                     if(!empty($tag_teks)) {
@@ -225,14 +234,12 @@ class Faq_detail extends CI_Controller {
                                 $id_tag = $this->db->insert_id();
                             }
                             
-                            // Siapkan data untuk tabel jembatan
                             $data_jembatan_tag[] = [
                                 'faq_detail_id' => $id_faq_baru,
                                 'faq_tag_id' => $id_tag
                             ];
                         }
                         
-                        // Simpan semua tag sekaligus ke tabel jembatan
                         if(!empty($data_jembatan_tag)) {
                             $this->db->insert_batch('faq_detail_has_tag', $data_jembatan_tag);
                         }
@@ -240,10 +247,8 @@ class Faq_detail extends CI_Controller {
                 }
             }
             
-            // Selesai transaksi database
             $this->db->trans_complete(); 
             
-            // Cek apakah ada error dari database selama proses berlangsung
             if ($this->db->trans_status() === FALSE) {
                 $this->session->set_flashdata('error', 'Gagal! Terjadi kesalahan pada database saat mengimpor.');
             } else {

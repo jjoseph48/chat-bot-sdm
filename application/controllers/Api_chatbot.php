@@ -52,13 +52,27 @@ class Api_chatbot extends CI_Controller {
         // }
 
         // 4. Threshold Decision (Batas Toleransi: 0.25)
+        // 4. Threshold Decision (0.25)
         $threshold = 0.25;
         $is_match = ($jawaban_terbaik['skor'] >= $threshold) ? 1 : 0;
 
-        if($is_match) {
+        if ($is_match) { 
             $balasan_bot = $jawaban_terbaik['jawaban'];
         } else {
-            $balasan_bot = "Maaf, Bisma tidak memahami pertanyaan Anda. Bisa dijelaskan dengan cara lain atau coba gunakan kata kunci yang lebih spesifik?";
+            // Ambil 3 opsi alternatif dari database
+            $faq_alternatif = $this->Faq_detail_model->get_faq_alternatif();
+            
+            // Susun kalimat permohonan maaf
+            $balasan_bot = "Maaf, Bisma tidak memahami pertanyaan Anda. Apakah mungkin Anda bermaksud menanyakan salah satu topik ini?<br><br>";
+            
+            // Tambahkan daftar FAQ alternatif jika datanya ada
+            if (!empty($faq_alternatif)) {
+                $balasan_bot .= "<ul class='mb-0 text-start' style='padding-left: 18px;'>";
+                foreach ($faq_alternatif as $faq) {
+                    $balasan_bot .= "<li class='mb-1'><i>" . $faq['pertanyaan'] . "</i></li>";
+                }
+                $balasan_bot .= "</ul>";
+            }
         }
 
         // 5. SIMPAN KE TABEL log_chatbot
