@@ -29,6 +29,8 @@
         <div class="collapse navbar-collapse justify-content-end">
             <ul class="navbar-nav">
                 <li class="nav-item"><a class="nav-link active fw-bold text-primary" href="<?= site_url('statistik_chatbot') ?>">Statistik</a></li>
+                <li class="nav-item"><a class="nav-link text-dark" href="<?= site_url('statistik_chatbot/riwayat') ?>">Riwayat Log</a></li>
+                
                 <li class="nav-item"><a class="nav-link" href="<?= site_url('dashboard') ?>">Kelola FAQ</a></li>
                 <li class="nav-item"><a class="nav-link" href="<?= site_url('chatbot_ui') ?>">Lihat Chatbot</a></li>
                 <li class="nav-item"><a class="nav-link text-danger" href="#">Logout</a></li>

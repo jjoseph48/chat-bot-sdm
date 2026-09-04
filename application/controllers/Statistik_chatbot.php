@@ -18,4 +18,12 @@ class Statistik_chatbot extends CI_Controller {
         // Menampilkan ke layar (pastikan nama file view-nya benar)
         $this->load->view('dashboard_statistik', $data);
     }
+
+    public function riwayat() {
+        $data['logs'] = $this->Log_chatbot_model->get_semua_log();
+
+        // render ke halaman view
+        $this->load->view('list_log_chatbot', $data);
+    }
+
 }

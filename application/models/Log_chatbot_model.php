@@ -49,4 +49,13 @@ class Log_chatbot_model extends CI_Model {
         $this->db->limit($limit);
         return $this->db->get()->result_array();
     }
+
+    public function get_semua_log() {
+        $this->db->select('log_chatbot.*, faq_detail.pertanyaan AS pertanyaan_faq');
+        $this->db->from('log_chatbot');
+        $this->db->join('faq_detail', 'faq_detail.id_faq_detail = log_chatbot.top_1_id_faq', 'left');
+        $this->db->order_by('log_chatbot.waktu_interaksi', 'DESC');
+        return $this->db->get()->result_array();
+    }
+
 }
