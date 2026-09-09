@@ -7,13 +7,20 @@ class Tag_model extends CI_Model
     private $table = 'faq_tag';
 
     // Read: mengambil semua data tag faq
-    public function get_all(){
+    public function get_all($limit = null, $start = null){
         $this->db->select('faq_tag.*, faq_status.judul_status');
         $this->db->from($this->table);
         // Menggabungkan tabel tag dengan tabel status
         $this->db->join('faq_status', 'faq_status.id_faq_status = faq_tag.status_tag_fk', 'left');
         // Filter: sembunyikan data yang memiliki status 2
         $this->db->where('faq_tag.status_tag_fk !=', 2);
+
+        // Logika Pagination
+        if($limit !== null && $start !== null) {
+            $this->db->limit($limit, $start);
+        }
+
+        $this->db->order_by('faq_tag.id_faq_tag', 'DESC');
 
         return $this->db->get()->result_array();
     }
@@ -54,5 +61,9 @@ class Tag_model extends CI_Model
         return $this->db->update($this->table, $data);
     }
 
+    public function get_hitung_tag_aktif() {
+        $this->db->where('faq_tag.status_tag_fk', 1);
+        return $this->db->count_all_results('faq_tag');
+    }
 
 }

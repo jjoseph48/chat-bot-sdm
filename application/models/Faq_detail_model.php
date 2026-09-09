@@ -99,12 +99,12 @@ class Faq_detail_model extends CI_Model {
         return $this->db->count_all_results($this->table);
     }
 
-    public function get_all_paginated($limit, $start) { 
-        $this->db->where('faq_detail_status_fk', 1);
-        $this->db->order_by('id_faq_detail', 'DESC');
-        $this->db->limit($limit, $start);
-        return $this->db->get($this->table)->result_array();
-    }
+    // public function get_all_paginated($limit, $start) { 
+    //     $this->db->where('faq_detail_status_fk', 1);
+    //     $this->db->order_by('id_faq_detail', 'DESC');
+    //     $this->db->limit($limit, $start);
+    //     return $this->db->get($this->table)->result_array();
+    // }
 
     public function get_faq_alternatif() {
         $this->db->select('pertanyaan');
