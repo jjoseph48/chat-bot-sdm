@@ -159,6 +159,11 @@
                     <?php endforeach; ?>
                 </tbody>
             </table>
+
+            <!-- Pagination -->
+            <div class="mt-4 d-flex justify-content-center">
+                <?= $pagination_links ?>
+            </div>
         </div>
     </div>
 </div>

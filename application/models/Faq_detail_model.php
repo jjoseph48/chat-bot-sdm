@@ -6,7 +6,7 @@ class Faq_detail_model extends CI_Model {
     private $primary_key = 'id_faq_detail';
 
     // Menampilkan semua data FAQ (digabungkan dengan Kategori & Status)
-    public function get_all(){
+   public function get_all($limit = null, $start = null){
         $this->db->select('faq_detail.*, faq_kategori.judul_kategori, faq_status.judul_status');
         $this->db->from($this->table);
 
@@ -19,8 +19,14 @@ class Faq_detail_model extends CI_Model {
         // Menyembunyikan FAQ yang berstatus "Dihapus"
         $this->db->where('faq_detail.faq_detail_status_fk !=', 2);
 
-        // Mengurutkan dari yang terbaru
-        // $this->db->order_by('faq_detail.dibuat_pada', 'DESC');
+        // --- TAMBAHAN LOGIKA PAGINATION ---
+        // Jika limit dan start dikirim dari Controller, aplikasikan ke query
+        if ($limit !== null && $start !== null) {
+            $this->db->limit($limit, $start);
+        }
+
+        // Mengurutkan dari yang terbaru (Disarankan diaktifkan)
+        $this->db->order_by('faq_detail.id_faq_detail', 'DESC');
 
         return $this->db->get()->result_array();
     }
@@ -85,6 +91,19 @@ class Faq_detail_model extends CI_Model {
         
         return $this->db->get()->result_array();
 
+    }
+
+    // pagination: Menghitung jumlah FAQ aktif untuk keperluan pagination
+    public function get_hitung_faq_aktif() {
+        $this->db->where('faq_detail_status_fk', 1);
+        return $this->db->count_all_results($this->table);
+    }
+
+    public function get_all_paginated($limit, $start) { 
+        $this->db->where('faq_detail_status_fk', 1);
+        $this->db->order_by('id_faq_detail', 'DESC');
+        $this->db->limit($limit, $start);
+        return $this->db->get($this->table)->result_array();
     }
 
     public function get_faq_alternatif() {

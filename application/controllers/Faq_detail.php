@@ -17,8 +17,52 @@ class Faq_detail extends CI_Controller {
 
     // READ: Halaman utama
     public function index() {
-        // Mengambil data utama FAQ
-        $data['faq'] = $this->Faq_detail_model->get_all();
+        $this->load->library('pagination');
+
+        // Konfigurasi dasar
+        $config['base_url'] = site_url('faq_detail/index');
+        $config['total_rows'] = $this->Faq_detail_model->get_hitung_faq_aktif(); // Menghitung jumlah FAQ aktif
+        $config['per_page'] = 5; // Jumlah FAQ per halaman
+
+        // Menangkap urutan halaman (segement) dari URL
+        // Kalau URL-nya .../faq_detail/index/10, maka mulainya dari baris ke-10
+        $start = $this->uri->segment(3) ? $this->uri->segment(3) : 0;
+
+        // Sytling pagination untuk bootstrap 6
+        $config['full_tag_open'] = '<nav><ul class="pagination justify-content-center mb-0">';
+        $config['full_tag_close'] = '</ul></nav>';
+
+        $config['first_link'] = 'Pertama';
+        $config['first_tag_open'] = '<li class="page-item">'; 
+        $config['first_tag_close'] = '</li>';
+
+        $config['last_link'] = 'Terakhir';
+        $config['last_tag_open'] = '<li class="page-item">';
+        $config['last_tag_close'] = '</li>';
+
+        $config['next_link'] = '&raquo;';
+        $config['next_tag_open'] = '<li class="page-item">';
+        $config['next_tag_close'] = '</li>';
+
+        $config['prev_link'] = '&laquo;';
+        $config['prev_tag_open'] = '<li class="page-item">';
+        $config['prev_tag_close'] = '</li>';
+
+        $config['cur_tag_open'] = '<li class="page-item active"><a class="page-link" href="#">';
+        $config['cur_tag_close'] = '</span></li>';
+
+        $config['num_tag_open'] = '<li class="page-item">';
+        $config['num_tag_close'] = '</li>';
+
+        // Menambahkan class "page-link" ke semua link pagination
+        $config['attributes'] = ['class' => 'page-link'];
+
+        // Insialisasi pagination
+        $this->pagination->initialize($config);
+
+        // Mengambil data dan link
+        $data['faq'] = $this->Faq_detail_model->get_all($config['per_page'], $start);
+        $data['pagination_links'] = $this->pagination->create_links();
 
         // Mengambil data Kategori untuk ditampilkan di Dropdown saat Tambah/Edit
         $data['kategori'] = $this->Kategori_model->get_all();
